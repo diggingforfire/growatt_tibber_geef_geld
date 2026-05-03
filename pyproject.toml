@@ -1,0 +1,31 @@
+[project]
+name = "growatt-price"
+version = "0.1.0"
+description = "Disable Growatt 7000 TL3-S inverter when Tibber prices go negative"
+requires-python = ">=3.11"
+dependencies = [
+    "pyTibber>=0.30.0",
+    # We import aiohttp directly for the two Growatt OpenAPI v1 calls
+    # (POST /v1/inverterSet, GET /v1/device/inverter/last_new_data), so declare
+    # it explicitly even though pyTibber would pull it in transitively.
+    "aiohttp>=3.9",
+    # zoneinfo's data source. Linux/Mac ship system tzdata; Windows doesn't,
+    # so the package is required there for ZoneInfo("Europe/Amsterdam") to work.
+    "tzdata; platform_system == 'Windows'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6.0",
+    "pytest>=8.0",
+]
+
+[project.scripts]
+growatt-price = "growatt_price.controller:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

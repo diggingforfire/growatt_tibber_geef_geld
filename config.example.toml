@@ -1,0 +1,46 @@
+# Copy this file to config.toml and fill in real values.
+# config.toml is gitignored — never commit it.
+
+[tibber]
+# Personal access token from https://developer.tibber.com
+token = "YOUR_TIBBER_PERSONAL_ACCESS_TOKEN"
+# Optional: pin a specific home if your account has more than one. UUID.
+# home_id = "00000000-0000-0000-0000-000000000000"
+
+[growatt]
+# OpenAPI v1 token, generated at server.growatt.com (account / API access page).
+# Sent as `token: <T>` HTTP header against https://openapi.growatt.com/v1/.
+api_token = "YOUR_GROWATT_OPENAPI_TOKEN"
+# Inverter serial as printed on the device sticker / shown in ShinePhone.
+inverter_serial = "YOUR_INVERTER_SERIAL"
+# Inverter's local timezone — controls when the daily `growatt+YYYYMMDD`
+# set-password rolls over. Defaults to "Europe/Amsterdam" if omitted, which
+# is correct for NL installations. Override only if the inverter is installed
+# in a different IANA timezone (e.g. "Europe/Berlin", "Europe/Paris").
+# timezone = "Europe/Amsterdam"
+# Note: the daily set-password itself is NOT stored here. It's `growatt` + the
+# date in the inverter's local timezone, computed at runtime, and sent as
+# `command_2` on every /v1/inverterSet write. Required despite the 2020 PDF
+# docs saying otherwise — see README "What we learned" §4.
+
+[control]
+# Threshold on Tibber priceInfo.total (consumer EUR/kWh, includes NL taxes).
+# Inverter is clamped to 0% when current_price < threshold, otherwise 100%.
+threshold_eur_per_kwh = 0.0
+
+# Re-assert desired state every N seconds even if state.json says it's applied —
+# cheap insurance against silent cloud-write failures and crosses the daily
+# password rollover at midnight automatically. The systemd.timer fires every
+# 5 min; this threshold is checked against state.json's updated_at on each tick.
+deadman_reassert_seconds = 1800
+
+[paths]
+# Last-applied inverter state (ON/OFF) plus updated_at — used for idempotency
+# and as the deadman timer source.
+state_file = "/var/lib/growatt-price/state.json"
+
+# Cached Tibber prices, written after every successful pyTibber fetch and
+# read on every invocation. Survives across cron ticks so we don't re-fetch
+# Tibber on every 5-min run. Format is pyTibber's price_total dict verbatim:
+# { "2026-05-03T13:30:00.000+02:00": 0.142, ... } (EUR/kWh, includes NL taxes).
+price_cache_file = "/var/lib/growatt-price/tibber_prices.json"
