@@ -247,38 +247,6 @@ async def apply_state(
     return True
 
 
-async def verify_ac_power(
-    session: aiohttp.ClientSession,
-    api_token: str,
-    serial: str,
-) -> float | None:
-    """GET /v1/device/inverter/last_new_data. Returns summed AC W or None."""
-    headers = {"token": api_token, "User-Agent": USER_AGENT}
-    try:
-        async with session.get(
-            f"{GROWATT_API_BASE}/device/inverter/last_new_data",
-            headers=headers,
-            params={"device_sn": serial},
-            timeout=HTTP_TIMEOUT,
-        ) as resp:
-            payload = await resp.json(content_type=None)
-    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
-        logger.warning("verify HTTP error: %r", e)
-        return None
-    if payload.get("error_code") != 0:
-        logger.warning("verify rejected: %s", payload)
-        return None
-    data = payload.get("data") or {}
-    try:
-        return (
-            float(data.get("pacr") or 0)
-            + float(data.get("pacs") or 0)
-            + float(data.get("pact") or 0)
-        )
-    except (TypeError, ValueError):
-        return None
-
-
 # ---------- last-applied state ----------
 
 def load_last_state(path: Path) -> str | None:
