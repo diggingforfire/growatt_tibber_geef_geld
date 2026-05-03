@@ -4,7 +4,7 @@ Each invocation: read disk cache → look up current 15-min slot price →
 fetch from Tibber only on cache miss → compare against threshold →
 POST /v1/inverterSet only on state change or deadman re-assert. Then exit.
 
-Runs from a systemd.timer every 5 minutes (see deploy/growatt-price.timer).
+Runs from cron every 5 minutes (see README §Deployment for the cron line).
 See README.md for the full design and the verified call shapes.
 """
 

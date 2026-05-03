@@ -30,7 +30,7 @@ threshold_eur_per_kwh = 0.0
 
 # Re-assert desired state every N seconds even if state.json says it's applied —
 # cheap insurance against silent cloud-write failures and crosses the daily
-# password rollover at midnight automatically. The systemd.timer fires every
+# password rollover at midnight automatically. Cron fires the controller every
 # 5 min; this threshold is checked against state.json's updated_at on each tick.
 deadman_reassert_seconds = 1800
 

@@ -50,7 +50,7 @@ Things the documentation didn't tell us, that one round-trip test on the live in
                                                                 Inverter (TL3-S)
 ```
 
-A Python script invoked from cron every 5 minutes. No daemon, no systemd unit, no Grott, no MQTT, no DNS hijack.
+A Python script invoked from cron every 5 minutes. No Grott, no MQTT, no DNS hijack.
 
 ## Components
 
